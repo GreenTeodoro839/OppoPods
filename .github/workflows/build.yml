@@ -3,7 +3,7 @@ name: Build Release APK
 on:
   push:
     tags: [ "v*" ]
-    branches: [ "master", "main" ]
+    branches: [ "master", "main", "ci-test" ]
   pull_request:
     branches: [ "master", "main" ]
   workflow_dispatch:
@@ -31,6 +31,17 @@ jobs:
 
       - name: Build release APK
         run: ./gradlew :app:assembleRelease
+
+      - name: Build debug APK (installable, debug-signed)
+        run: ./gradlew :app:assembleDebug
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: OppoPods-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          archive: false
+          if-no-files-found: error
 
       - name: Sign release APK
         id: sign
